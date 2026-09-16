@@ -1,0 +1,23 @@
+Django==5.0.6
+djangorestframework==3.15.1
+djangorestframework-simplejwt==5.3.1
+# PyMySQL is a pure-Python MySQL driver: no compiler, no libmysqlclient-dev,
+# no pkg-config needed - `pip install` just works on every OS. Django loads
+# it as a drop-in replacement for mysqlclient via the shim in config/__init__.py.
+# If you later want the (faster, C-based) mysqlclient driver instead, install
+# the OS packages it needs first - Debian/Ubuntu: `apt install default-libmysqlclient-dev pkg-config build-essential`,
+# macOS: `brew install mysql pkg-config` - then `pip install mysqlclient==2.2.4`
+# and delete the PyMySQL line + the shim in config/__init__.py.
+PyMySQL==1.1.1
+psycopg[binary]==3.2.13
+django-cors-headers==4.3.1
+django-environ==0.11.2
+channels==4.1.0
+# Pinned explicitly (rather than left to resolve freely) so the Redis-backed
+# channel layer is on a version combination that's actually been tested
+# together, since channels-redis and redis-py have both moved fast.
+redis==5.0.4
+channels-redis==4.2.0
+daphne==4.1.2
+Pillow
+django-filter==24.2
