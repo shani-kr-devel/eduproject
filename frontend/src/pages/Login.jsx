@@ -32,7 +32,7 @@ export default function Login() {
       <div className="login-card">
         <h2>EduManage</h2>
         <p style={{ color: "#64748b", marginTop: -6, marginBottom: 22 }}>
-          Sign in as Admin, Teacher, Student, or Parent.
+          Sign in
         </p>
         <form onSubmit={handleSubmit}>
           <div className="form-field">
