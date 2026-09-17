@@ -17,7 +17,6 @@ export default function Login() {
     try {
       const user = await login(email, password);
       navigate(`/${user.role}/dashboard`);
-      console.log("Logged in user:", user);
     } catch (err) {
       setError(
         err.response?.data?.detail ||
