@@ -45,7 +45,15 @@ export function AuthProvider({ children }) {
     return basicUser;
   }
 
-  function logout() {
+  async function logout() {
+    const refresh = localStorage.getItem("refresh");
+    if (refresh) {
+      try {
+        await api.post("/accounts/logout/", { refresh });
+      } catch {
+        // Local cleanup still logs the user out if the backend is unavailable.
+      }
+    }
     clearTokens();
     setUser(null);
   }
