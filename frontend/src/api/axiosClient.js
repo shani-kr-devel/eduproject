@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const api = axios.create({ baseURL: "/api" });
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "/api",
+});
 
 function getTokens() {
   return {
@@ -43,8 +45,8 @@ api.interceptors.response.use(
       config._retried = true;
       try {
         if (!refreshing) {
-          refreshing = axios
-            .post("/api/accounts/token/refresh/", { refresh })
+          refreshing = api
+            .post("/accounts/token/refresh/", { refresh })
             .then((r) => {
               setAccess(r.data.access);
               return r.data.access;
