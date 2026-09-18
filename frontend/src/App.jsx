@@ -1,4 +1,4 @@
-import { Navigate, Route, HashRouter as Router, Routes } from "react-router-dom";
+import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -10,6 +10,7 @@ import StudentPerformance from "./pages/student/Performance";
 import StudentStore from "./pages/student/Store";
 import StudentCourses from "./pages/student/Courses";
 import StudentMessages from "./pages/student/Messages";
+import StudentHomework from "./pages/student/Homework";
 
 import ParentDashboard from "./pages/parent/Dashboard";
 import ParentChildren from "./pages/parent/Children";
@@ -23,6 +24,7 @@ import TeacherTests from "./pages/teacher/Tests";
 import TeacherCourses from "./pages/teacher/Courses";
 import TeacherReports from "./pages/teacher/Reports";
 import TeacherMessages from "./pages/teacher/Messages";
+import TeacherHomework from "./pages/teacher/Homework";
 
 
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -45,8 +47,9 @@ export default function App() {
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<HomeRedirect />} />
+          <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/login/" element={<Login />} />
 
           {/* Student */}
           <Route path="/student/dashboard" element={<ProtectedRoute roles={["student"]}><StudentDashboard /></ProtectedRoute>} />
@@ -55,6 +58,7 @@ export default function App() {
           <Route path="/student/store" element={<ProtectedRoute roles={["student"]}><StudentStore /></ProtectedRoute>} />
           <Route path="/student/courses" element={<ProtectedRoute roles={["student"]}><StudentCourses /></ProtectedRoute>} />
           <Route path="/student/messages" element={<ProtectedRoute roles={["student"]}><StudentMessages /></ProtectedRoute>} />
+          <Route path="/student/homework" element={<ProtectedRoute roles={["student"]}><StudentHomework /></ProtectedRoute>} />
 
           {/* Parent */}
           <Route path="/parent/dashboard" element={<ProtectedRoute roles={["parent"]}><ParentDashboard /></ProtectedRoute>} />
@@ -70,6 +74,7 @@ export default function App() {
           <Route path="/teacher/courses" element={<ProtectedRoute roles={["teacher"]}><TeacherCourses /></ProtectedRoute>} />
           <Route path="/teacher/reports" element={<ProtectedRoute roles={["teacher"]}><TeacherReports /></ProtectedRoute>} />
           <Route path="/teacher/messages" element={<ProtectedRoute roles={["teacher"]}><TeacherMessages /></ProtectedRoute>} />
+          <Route path="/teacher/homework" element={<ProtectedRoute roles={["teacher"]}><TeacherHomework /></ProtectedRoute>} />
 
           {/* Admin */}
           <Route path="/admin/dashboard" element={<ProtectedRoute roles={["admin"]}><AdminDashboard /></ProtectedRoute>} />

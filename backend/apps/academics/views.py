@@ -1,9 +1,10 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,13 +13,60 @@ from apps.accounts.models import Role, StudentProfile
 from apps.accounts.permissions import can_access_student, parent_profile_of, teacher_profile_of, user_is_admin
 from apps.courses.models import Course, CourseAssignment, CourseContentProgress, CourseQuizAttempt, Enrollment
 
-from .models import Feedback, StudentGroup, Test, TestAnswer, TestAssignment, TestAttempt, TestQuestion, TestScore
+from .models import Feedback, Homework, StudentGroup, Test, TestAnswer, TestAssignment, TestAttempt, TestQuestion, TestScore
 from .permissions import ReadOnlyIfNotOwnerTeacher
 from .serializers import (
-    FeedbackSerializer, PerformanceReportSerializer, StudentGroupSerializer,
+    FeedbackSerializer, HomeworkSerializer, HomeworkSubmissionSerializer, PerformanceReportSerializer, StudentGroupSerializer,
     TestAnswerSerializer, TestAttemptSerializer, TestQuestionSerializer,
     TestScoreSerializer, TestSerializer,
 )
+
+
+class HomeworkViewSet(viewsets.ModelViewSet):
+    serializer_class = HomeworkSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = Homework.objects.select_related("teacher__user", "student__user")
+        if user_is_admin(user):
+            return qs
+        if user.role == Role.TEACHER and hasattr(user, "teacher_profile"):
+            return qs.filter(teacher=user.teacher_profile)
+        if user.role == Role.STUDENT and hasattr(user, "student_profile"):
+            return qs.filter(student=user.student_profile)
+        return qs.none()
+
+    def create(self, request, *args, **kwargs):
+        if request.user.role != Role.TEACHER or not hasattr(request.user, "teacher_profile"):
+            raise PermissionDenied("Only teachers can assign homework.")
+        student_ids = request.data.getlist("student_ids") if hasattr(request.data, "getlist") else request.data.get("student_ids", [])
+        if isinstance(student_ids, str):
+            student_ids = [student_ids]
+        students = StudentProfile.objects.filter(pk__in=student_ids, teachers=request.user.teacher_profile)
+        if not students.exists():
+            raise ValidationError({"student_ids": "Select at least one of your students."})
+        payload = request.data.copy()
+        payload.pop("student_ids", None)
+        created = []
+        for student in students:
+            serializer = self.get_serializer(data=payload)
+            serializer.is_valid(raise_exception=True)
+            created.append(serializer.save(teacher=request.user.teacher_profile, student=student))
+        return Response(self.get_serializer(created, many=True).data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["post"], parser_classes=[MultiPartParser, FormParser])
+    def submit(self, request, pk=None):
+        homework = self.get_object()
+        if request.user.role != Role.STUDENT or homework.student.user_id != request.user.id:
+            raise PermissionDenied("Only the assigned student can submit this homework.")
+        if homework.status == Homework.Status.SUBMITTED:
+            raise ValidationError({"detail": "This homework has already been submitted."})
+        serializer = HomeworkSubmissionSerializer(homework, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        homework = serializer.save(status=Homework.Status.SUBMITTED, submitted_at=timezone.now())
+        return Response(self.get_serializer(homework).data)
 
 
 class TestViewSet(viewsets.ModelViewSet):

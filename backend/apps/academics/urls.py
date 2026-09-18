@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
+router.register("homework", views.HomeworkViewSet, basename="homework")
 router.register("tests", views.TestViewSet, basename="tests")
 router.register("test-questions", views.TestQuestionViewSet, basename="test-questions")
 router.register("student-groups", views.StudentGroupViewSet, basename="student-groups")

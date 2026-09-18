@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 const NAV_BY_ROLE = {
   student: [
     { to: "/student/dashboard", label: "Dashboard" },
+    { to: "/student/homework", label: "Homework" },
     { to: "/student/tests", label: "Tests" },
     { to: "/student/performance", label: "Performance" },
     { to: "/student/store", label: "Course Store" },
@@ -20,6 +21,7 @@ const NAV_BY_ROLE = {
   teacher: [
     { to: "/teacher/dashboard", label: "Dashboard" },
     { to: "/teacher/students", label: "My Students" },
+    { to: "/teacher/homework", label: "Homework" },
     { to: "/teacher/tests", label: "Tests" },
     { to: "/teacher/courses", label: "Courses" },
     { to: "/teacher/reports", label: "Reports" },

@@ -49,7 +49,10 @@ export default function StudentTests() {
           {(tests || []).map((test) => (
             <Card key={test.id} title={`${test.title} - ${test.subject}`}>
               <p>{test.duration_minutes} minutes · {test.questions?.length || 0} questions</p>
-              {!active && <button className="btn btn-primary" onClick={() => start(test)}>Start test</button>}
+              {!active && !test.completed_attempt && <button className="btn btn-primary" onClick={() => start(test)}>Start test</button>}
+              {test.completed_attempt && (
+                <p><span className="pill pill-blue">Completed</span> Score: {test.completed_attempt.score}/{test.completed_attempt.max_score}</p>
+              )}
               {active?.id === test.id && (
                 <form onSubmit={(event) => { event.preventDefault(); submit(); }}>
                   <p><strong>Time remaining:</strong> {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}</p>
