@@ -83,7 +83,6 @@ class CourseBrowseSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    course_title = serializers.CharField(source="course.title", read_only=True)
     student_id_code = serializers.CharField(source="student.student_id", read_only=True)
 
     class Meta:
@@ -92,7 +91,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "id", "order_id", "student", "student_id_code", "course", "course_title",
             "amount", "status", "gateway_order_id", "created_at",
         ]
-        read_only_fields = ["order_id", "student", "amount", "status", "gateway_order_id"]
+        read_only_fields = ["order_id", "student", "amount", "status", "gateway_order_id", "course_title"]
 
 
 class CheckoutSerializer(serializers.Serializer):

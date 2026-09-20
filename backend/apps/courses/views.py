@@ -346,7 +346,9 @@ class CheckoutView(generics.GenericAPIView):
             raise ValidationError({"detail": "You are already enrolled in this course."})
 
         with transaction.atomic():
-            order = Order.objects.create(student=student, course=course, amount=course.price)
+            order = Order.objects.create(
+                student=student, course=course, course_title=course.title, amount=course.price
+            )
             gateway = get_gateway()
             gw_result = gateway.create_order(
                 amount_rupees=course.price,
@@ -429,9 +431,10 @@ def _apply_gateway_event(payload: dict):
             order.status = Order.Status.PAID
             order.save(update_fields=["status"])
 
-            Enrollment.objects.get_or_create(
-                student=order.student, course=order.course, defaults={"order": order}
-            )
+            if order.course_id:
+                Enrollment.objects.get_or_create(
+                    student=order.student, course=order.course, defaults={"order": order}
+                )
         else:
             payment.status = Payment.Status.FAILED
             payment.gateway_response = payload

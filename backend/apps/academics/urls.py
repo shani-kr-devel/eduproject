@@ -13,5 +13,6 @@ router.register("feedback", views.FeedbackViewSet, basename="feedback")
 
 urlpatterns = [
     path("performance/<int:student_pk>/", views.PerformanceReportView.as_view(), name="performance-report"),
+    path("daily-report/<int:student_pk>/", views.DailyReportView.as_view(), name="daily-report"),
     path("", include(router.urls)),
 ]

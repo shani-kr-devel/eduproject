@@ -369,3 +369,77 @@ class PerformanceReportView(APIView):
             "recent_feedback": recent_feedback,
         }
         return Response(PerformanceReportSerializer(payload, context={"request": request}).data)
+
+
+class DailyReportView(APIView):
+    def get(self, request, student_pk):
+        student = get_object_or_404(StudentProfile, pk=student_pk)
+        if not can_access_student(request.user, student):
+            raise PermissionDenied("You do not have access to this student's data.")
+
+        report_date = timezone.localdate()
+        homework = Homework.objects.filter(student=student, due_date=report_date)
+        tests = Test.objects.filter(
+            Q(date=report_date)
+            & (
+                Q(group_assignments__group__students=student)
+                | Q(attempts__student=student)
+            )
+        ).distinct().prefetch_related("attempts")
+        completed_tasks = CourseContentProgress.objects.filter(
+            student=student, completed_at__date=report_date
+        ).select_related("content__course")
+
+        homework_report = [
+            {
+                "id": item.id,
+                "title": item.title,
+                "status": item.status,
+                "completed": item.status == Homework.Status.SUBMITTED,
+                "due_date": item.due_date,
+            }
+            for item in homework
+        ]
+        test_report = []
+        for test in tests:
+            attempt = next(
+                (item for item in test.attempts.all() if item.student_id == student.id),
+                None,
+            )
+            test_report.append(
+                {
+                    "id": test.id,
+                    "title": test.title,
+                    "subject": test.subject,
+                    "completed": bool(attempt and attempt.submitted_at),
+                    "submitted_at": attempt.submitted_at if attempt else None,
+                    "score": attempt.score if attempt and attempt.submitted_at else None,
+                    "max_score": attempt.max_score if attempt and attempt.submitted_at else None,
+                }
+            )
+
+        task_report = [
+            {
+                "id": progress.content_id,
+                "title": progress.content.title,
+                "course": progress.content.course.title,
+                "completed_at": progress.completed_at,
+                "completed": True,
+            }
+            for progress in completed_tasks
+        ]
+        return Response(
+            {
+                "date": report_date,
+                "homework": homework_report,
+                "tests": test_report,
+                "tasks": task_report,
+                "summary": {
+                    "homework_completed": sum(item["completed"] for item in homework_report),
+                    "homework_total": len(homework_report),
+                    "tests_completed": sum(item["completed"] for item in test_report),
+                    "tests_total": len(test_report),
+                    "tasks_completed": len(task_report),
+                },
+            }
+        )

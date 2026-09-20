@@ -18,6 +18,7 @@ export default function AdminCourses() {
   const [questionFile, setQuestionFile] = useState(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("success");
   const quizContents = (courses || []).flatMap((item) => (item.contents || []).filter((contentItem) => contentItem.content_type === "quiz"));
 
   async function createCourse(event) {
@@ -75,13 +76,21 @@ export default function AdminCourses() {
 
   async function remove(item) {
     if (!confirm(`Delete "${item.title}"?`)) return;
-    await api.delete(`/courses/courses/${item.id}/`);
-    reload();
+    try {
+      await api.delete(`/courses/courses/${item.id}/`);
+      reload();
+      setMessageType("success");
+      setMessage("Course deleted.");
+    } catch (error) {
+      const detail = error.response?.data?.detail;
+      setMessageType("error");
+      setMessage(typeof detail === "string" ? detail : "The course could not be deleted.");
+    }
   }
 
   return (
     <Layout title="Courses">
-      {message && <p className="success-text">{message}</p>}
+      {message && <p className={messageType === "error" ? "error-text" : "success-text"}>{message}</p>}
       <Card title="Create a course">
         <form onSubmit={createCourse} className="grid grid-2">
           <input placeholder="Course title" value={course.title} onChange={(e) => setCourse((f) => ({ ...f, title: e.target.value }))} required />

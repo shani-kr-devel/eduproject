@@ -180,6 +180,101 @@ p {
   margin-top: 16px;
 }
 
+.teacher-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.student-search-results,
+.dashboard-pending-list,
+.teacher-report-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.student-search-result,
+.dashboard-pending-item,
+.teacher-report-row,
+.feedback-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--navy);
+  text-align: left;
+}
+
+.student-search-result {
+  cursor: pointer;
+  font: inherit;
+}
+
+.student-search-result:hover,
+.student-search-result.selected {
+  border-color: #93c5fd;
+  background: #f8fbff;
+}
+
+.student-search-result span:first-child,
+.dashboard-pending-item span:first-child,
+.teacher-report-row span:first-child,
+.feedback-row {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.student-search-result small,
+.dashboard-pending-item small,
+.teacher-report-row small,
+.feedback-row span {
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+.dashboard-pending-list {
+  margin-top: 16px;
+}
+
+.student-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.student-detail-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.teacher-report-sections {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 20px 0;
+}
+
+.teacher-report-sections h4 {
+  margin-bottom: 8px;
+}
+
+.feedback-row {
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
 .dashboard-section-note {
   color: #64748b;
   font-size: 0.78rem;
@@ -317,7 +412,8 @@ p {
 
 @media (max-width: 900px) {
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-  .student-dashboard-grid { grid-template-columns: 1fr; }
+  .student-dashboard-grid, .teacher-dashboard-grid, .teacher-report-sections { grid-template-columns: 1fr; }
+  .student-detail-grid { grid-template-columns: repeat(2, 1fr); }
   .sidebar { display: none; }
 }
 

@@ -97,7 +97,8 @@ class Order(models.Model):
 
     order_id = models.CharField(max_length=40, unique=True, default=generate_order_id, editable=False)
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name="orders")
-    course = models.ForeignKey(Course, on_delete=models.PROTECT, related_name="orders")
+    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders")
+    course_title = models.CharField(max_length=200, blank=True, default="")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.CREATED)
     gateway_order_id = models.CharField(max_length=100, blank=True)
@@ -109,7 +110,7 @@ class Order(models.Model):
         indexes = [models.Index(fields=["status"])]
 
     def __str__(self):
-        return f"{self.order_id} - {self.course.title} - {self.status}"
+        return f"{self.order_id} - {self.course_title} - {self.status}"
 
 
 class Payment(models.Model):
