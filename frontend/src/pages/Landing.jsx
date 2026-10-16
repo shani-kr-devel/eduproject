@@ -35,9 +35,6 @@ export default function Landing() {
           <a href="#community">Who it’s for</a>
           <a href="#demo">Demo access</a>
         </nav>
-        <Link className="landing-signin" to="/login">
-          Sign in <span aria-hidden="true">↗</span>
-        </Link>
       </header>
 
       <main>
