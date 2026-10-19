@@ -8,7 +8,7 @@ Course Store with online payments (UPI / Google Pay / PhonePe / Paytm).
   Django Channels (WebSocket chat)
 - **Frontend:** React 18 + React Router + Axios (Vite)
 
-Everything has been built and verified locally: the backend's 14 automated
+Everything has been built and verified locally: the backend's 5 automated
 tests pass, `npm run build` succeeds, and a live smoke test confirmed
 login → JWT → protected endpoints → the React dev server's API proxy all work
 end-to-end.
